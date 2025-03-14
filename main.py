@@ -12,30 +12,33 @@ dealer.deal_next()
 dealer.deal_next()
 dealer.deal_next()
 
-# players[0].hand[0].value = '2'
-# players[0].hand[1].value = '3'
-
-# dealer.runout[0].value = '4'
-# dealer.runout[1].value = '5'
-# dealer.runout[2].value = 'Q'
-# dealer.runout[3].value = 'K'
-# dealer.runout[4].value = 'A'
-
-
-# players[0].hand[0].suit = '♥'
-# players[0].hand[1].suit = '♥'
-
-# dealer.runout[0].suit = '♥'
-# dealer.runout[1].suit = '♥'
-# dealer.runout[2].suit = '♥'
-# dealer.runout[3].suit = '♥'
-# dealer.runout[4].suit = '♥'
-
 for player in players:
     print(player.get_hand(to_print=True))
 print(dealer.get_runout(to_print=True))
 
+max_rank = -1
+tied_players = []
 for player in players:
     value, best_hand = dealer.evaluate_hand(player.get_hand())
+    player.set_best_hand(value, best_hand)
     print(value, [str(card) for card in best_hand])
-    # print()
+    if value > max_rank:
+        max_rank = value
+        tied_players = [player]
+    elif value == max_rank:
+        tied_players.append(player)
+        
+if len(tied_players) == 1:
+    print("We have a winner!")
+    print(tied_players[0].get_hand_value(), [str(card) for card in tied_players[0].get_best_hand()])
+else:
+    winning_players = dealer.break_tie(tied_players)
+    if len(winning_players) == 1:
+        print("We have a winner!")
+        print(winning_players[0].get_hand_value(), [str(card) for card in winning_players[0].get_best_hand()])
+    elif len(winning_players) > 1:
+        print("We have multiple winners!")
+        for winning_player in winning_players:
+            print(winning_player.get_hand_value(), [str(card) for card in winning_player.get_best_hand()])
+    else:
+        print("other")

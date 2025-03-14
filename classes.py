@@ -66,6 +66,19 @@ class Player():
             return f"Your hand: {[str(card) for card in self.hand]}"
         else:
             return self.hand
+    
+    def set_best_hand(self, value, best_hand):
+        self.hand_rank = value
+        self.best_hand = best_hand
+        
+    def get_best_hand(self, to_print=False):
+        if to_print:
+            return f"Your best hand: {[str(card) for card in self.best_hand]}"
+        else:
+            return self.best_hand
+        
+    def get_hand_value(self):
+        return self.hand_rank
 
 class Dealer():
     def __init__(self):
@@ -110,6 +123,12 @@ class Dealer():
     
     def get_highest_cards(self, hand, n, cards_present=[]):
         return [card for card in hand if card not in cards_present][:n]
+    
+    def find_first_difference_in_hands(self, *hands):
+        for i, values in enumerate(zip(*hands)):
+            if len(set(values)) > 1:
+                return i 
+        return -1
     
     def evaluate_hand(self, hand):
         hand.extend(self.runout)
@@ -208,6 +227,8 @@ class Dealer():
         
         return 0, self.get_highest_cards(hand, 5)
         
-        
-        
-        
+    def break_tie(self, players):
+        differing_index = self.find_first_difference_in_hands(*[player.get_best_hand() for player in players])
+        max_val = max([self.valuation[player.get_best_hand()[differing_index].get_value()] for player in players])
+        return [player for player in players if self.valuation[player.get_best_hand()[differing_index].get_value()] == max_val]
+       
